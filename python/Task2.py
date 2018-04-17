@@ -26,9 +26,9 @@ September 2016.".
 dict = {}
 for call in calls:
     if dict.get(call[0]):
-        dict[call[0]] += call[3]
+        dict[call[0]] += int(call[3])
     else:
-        dict[call[0]] = call[3]
+        dict[call[0]] = int(call[3])
 
 res = max(zip(dict.values(), dict.keys()))
 message = "<{}> spent the longest time, <{}> seconds, on the phone during September 2016."
