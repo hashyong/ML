@@ -13,13 +13,13 @@ MON_DATA = { 1 : 'january',
              5 : 'may',
              6 : 'june'}
 
-WEEK_DATA = { 1 : 'monday',
-              2 : 'tuesday',
-              3 : 'wednesday',
-              4 : 'thursday',
-              5 : 'friday',
-              6 : 'saturday',
-              0 : 'sunday'}
+WEEK_DATA = { 0 : 'monday',
+              1 : 'tuesday',
+              2 : 'wednesday',
+              3 : 'thursday',
+              4 : 'friday',
+              5 : 'saturday',
+              6 : 'sunday'}
 
 def get_filters():
     """
@@ -32,28 +32,25 @@ def get_filters():
     """
     print('Hello! Let\'s explore some US bikeshare data!')
     # TO DO: get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
-    bRet = True
-    while bRet:
-      city = input("Enter your input: chicago, new york city, washington \n")
+    while True:
+      city = input("Enter your input: chicago, new york city, washington \n").lower()
       cityList = ["chicago", "new york city", "washington"]
       if city in cityList:
-        bRet = False
+          break
 
     # TO DO: get user input for month (all, january, february, ... , june)
-    bRet = True
-    while bRet:
-      month = input("Enter your input: all, january, february, march, april, may, june \n")
+    while True:
+      month = input("Enter your input: all, january, february, march, april, may, june \n").lower()
       monthList = ["all", "january", "february", "march", "april", "may", "june"]
       if month in monthList:
-        bRet = False
+          break
 
     # TO DO: get user input for day of week (all, monday, tuesday, ... sunday)
-    bRet = True
-    while bRet:
-      day = input("Enter your input: all, monday, tuesday, ... sunday \n")
+    while True:
+      day = input("Enter your input: all, monday, tuesday, ... sunday \n").lower()
       dayList = ["all", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
       if day in dayList:
-        bRet = False
+          break
 
 
     print('-'*40)
@@ -73,40 +70,14 @@ def load_data(city, month, day):
     """
     df = pd.read_csv(CITY_DATA[city])
 
-    index = 0
-
-    if month == 'january':
-        index = 1
-    elif month == 'february':
-        index = 2
-    elif month == 'march':
-        index = 3
-    elif month == 'april':
-        index = 4
-    elif month == 'may':
-        index = 5
-
+    monthList = ['january', 'febuary', 'march', 'april', 'may', 'june']
     if month != 'all':
-        res = df.mul(df['Start Time'].apply(lambda x: time.strptime(x,'%Y-%m-%d %H:%M:%S').tm_mon == index), axis=0)
+        res = df.mul(df['Start Time'].apply(lambda x: time.strptime(x,'%Y-%m-%d %H:%M:%S').tm_mon == (monthList.index(month) + 1)), axis=0)
         df = res.loc[res["Trip Duration"] != 0]
 
-    if day == 'monday':
-        index = 1
-    elif day == 'tuesday':
-        index = 2
-    elif day == 'wednesday':
-        index = 3
-    elif day == 'thursday':
-        index = 4
-    elif day == 'friday':
-        index = 5
-    elif day == 'saturday':
-        index = 6
-    elif day == 'sunday':
-        index = 0
-
+    weekday = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
     if day != 'all':
-        res = df.mul(df['Start Time'].apply(lambda x: time.strptime(x,'%Y-%m-%d %H:%M:%S').tm_wday == index), axis=0)
+        res = df.mul(df['Start Time'].apply(lambda x: time.strptime(x,'%Y-%m-%d %H:%M:%S').tm_wday == weekday.index(day)), axis=0)
         df = res.loc[res["Trip Duration"] != 0]
 
     return df
@@ -207,19 +178,19 @@ def user_stats(df):
     res = df['User Type'].value_counts()
     print("Display counts of user types:" + str(res.count()))
 
-    # TO DO: Display counts of gender
-    res = df['Gender'].value_counts()
-    print("Display counts of gender:" + str(res.count()))
-
-
-    # TO DO: Display earliest, most recent, and most common year of birth
-    res = df['Birth Year'].apply(lambda x:float(x)).describe()
-
-    resNew = df['Birth Year'].value_counts()
-    maxCom = resNew.max()
-    maxIndex = resNew.loc[resNew == maxCom].index.values[0]
-
-    print("Display earliest, most recent, and most common year of birth: %.1f, %.1f, %s" % (res["min"], res["max"], maxIndex))
+    try:
+        # TO DO: Display counts of gender
+        gender = df['Gender'].value_counts()
+        # TO DO: Display earliest, most recent, and most common year of birth
+        res = df['Birth Year'].apply(lambda x:float(x)).describe()
+        resNew = df['Birth Year'].value_counts()
+        maxCom = resNew.max()
+        maxIndex = resNew.loc[resNew == maxCom].index.values[0]
+    except:
+        print("not existed column")
+    else:
+        print("Display counts of gender:" + str(gender.count()))
+        print("Display earliest, most recent, and most common year of birth: %.1f, %.1f, %s" % (res["min"], res["max"], maxIndex))
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -242,4 +213,4 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+    main()
